@@ -10,8 +10,9 @@
 //  0.3.1.170622_base   removed pointer operation of entity classes
 //  0.3.2.170622_base   reconstructed entity classes' hierachy
 //  0.3.3.170622_base   changed linked list mapping method to hash mapping
-//  0.3.4.170623_alpha  many internal bugs fixed and basic system implemented, alpha version was reached
-//  0.3.5.170624_alpha  patches on file editing.
+//  0.3.4.170623_alpha  many internal bugs fixed and basic system implemented, alpha version reached
+//  0.3.5.170624_alpha  patches on file editing
+//  1.0.0.170624_beta   initial gui added, beta version reached
 //
 //
 //  Created by Emoin Lam on 22/06/2017.
