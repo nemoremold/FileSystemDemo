@@ -49,6 +49,7 @@ namespace Annexation {
 		AnnexationForm() {
 			fileSystem = new FileSystem;
 			willExitSystem = false;
+			this->panels = nullptr;
 			fileSystem->initializeFileSystem();
 			InitializeComponent();
 			reset();
@@ -62,6 +63,11 @@ namespace Annexation {
 			for (int i = 0; i < length; ++i) {
 			panels[i]->Controls->Clear();
 			}*/
+			if (panels != nullptr) {
+				for each (System::Windows::Forms::Panel^ iter in this->panels) {
+					this->ContentSplitContainer->Panel2->Controls->Remove(iter);
+				}
+			}
 
 			int fileCount = fileSystem->getFileCount();
 			this->panels = (gcnew array<System::Windows::Forms::Panel^>(fileCount));
@@ -98,8 +104,7 @@ namespace Annexation {
 				this->panels[i]->MouseClick += gcnew System::Windows::Forms::MouseEventHandler(this, &AnnexationForm::OnMouseClick);
 				//this->panels[i]->MouseCaptureChanged += gcnew System::EventHandler(this, &AnnexationForm::OnMouseCaptureChanged);
 				this->panels[i]->MouseEnter += gcnew System::EventHandler(this, &AnnexationForm::OnMouseEnter);
-				this->panels[i]->MouseLeave += gcnew System::EventHandler(this, &AnnexationForm::OnMouseLeave);
-				
+				this->panels[i]->MouseLeave += gcnew System::EventHandler(this, &AnnexationForm::OnMouseLeave); 
 				//
 				// pictureBox
 				//
@@ -165,6 +170,7 @@ namespace Annexation {
 		}
 
 		void reset() {
+			indexOfButtonBeingClicked = -1;
 			newFileName = 1;
 			newFolderName = 1;
 			diskUsedPercentageInNumber = fileSystem->getCurrentDiskSize() / (BLOCK_BEGIN_INDEX_IN_MEMORY + MAX_FILE_SIZE);
@@ -200,6 +206,7 @@ namespace Annexation {
 		array<System::Windows::Forms::Label^>^ fileTypeLabels;
 		array<System::Windows::Forms::Label^>^ fileSizeLabels;
 		array<System::Windows::Forms::PictureBox^>^ pictureBoxes;
+		int indexOfButtonBeingClicked;
 
 	private: System::Windows::Forms::Panel^  fileName;
 
@@ -747,6 +754,7 @@ namespace Annexation {
 			this->ContentSplitContainer->Panel2->Controls->Add(this->divideLine4);
 			this->ContentSplitContainer->Panel2->Controls->Add(this->filetype);
 			this->ContentSplitContainer->Panel2->Controls->Add(this->fileName);
+			this->ContentSplitContainer->Panel2->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &AnnexationForm::ContentSplitContainer_Panel2_Paint);
 			this->ContentSplitContainer->Size = System::Drawing::Size(1082, 466);
 			this->ContentSplitContainer->SplitterDistance = 150;
 			this->ContentSplitContainer->SplitterWidth = 1;
@@ -943,12 +951,22 @@ private: System::Void createFile_Click(System::Object^  sender, System::EventArg
 		 void OnMouseUp(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
 		 void OnMouseClick(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
 		 //void OnMouseCaptureChanged(System::Object ^sender, System::EventArgs ^e);
+private: System::Void ContentSplitContainer_Panel2_Paint(System::Object^  sender, System::Windows::Forms::PaintEventArgs^  e) {
+	indexOfButtonBeingClicked = -1;
+}
 };
 }
 
 void Annexation::AnnexationForm::OnMouseEnter(System::Object ^sender, System::EventArgs ^e)
 {
 	System::Windows::Forms::Panel^ temp = (Panel^)sender;
+	int cnt = 0;
+	for each (System::Windows::Forms::Panel^ iter in panels) {
+		if (temp->Name == iter->Name && cnt == indexOfButtonBeingClicked) {
+			return;
+		}
+		++cnt;
+	}
 	temp->BackColor = System::Drawing::SystemColors::GradientInactiveCaption;
 	//throw gcnew System::NotImplementedException();
 }
@@ -956,6 +974,13 @@ void Annexation::AnnexationForm::OnMouseEnter(System::Object ^sender, System::Ev
 void Annexation::AnnexationForm::OnMouseLeave(System::Object ^sender, System::EventArgs ^e)
 {
 	System::Windows::Forms::Panel^ temp = (Panel^)sender;
+	int cnt = 0;
+	for each (System::Windows::Forms::Panel^ iter in panels) {
+		if (temp->Name == iter->Name && cnt == indexOfButtonBeingClicked) {
+			return;
+		}
+		++cnt;
+	}
 	temp->BackColor = System::Drawing::SystemColors::ControlLightLight;
 	//throw gcnew System::NotImplementedException();
 }
@@ -972,7 +997,7 @@ void Annexation::AnnexationForm::OnMouseDown(System::Object ^sender, System::Win
 void Annexation::AnnexationForm::OnMouseUp(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e)
 {
 	System::Windows::Forms::Panel^ temp = (Panel^)sender;
-	temp->BackColor = System::Drawing::SystemColors::GradientInactiveCaption;
+		temp->BackColor = System::Drawing::SystemColors::GradientInactiveCaption;
 	//throw gcnew System::NotImplementedException();
 }
 
@@ -981,6 +1006,16 @@ void Annexation::AnnexationForm::OnMouseClick(System::Object ^sender, System::Wi
 {
 	System::Windows::Forms::Panel^ temp = (Panel^)sender;
 	temp->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
+	int cnt = 0;
+	for each (System::Windows::Forms::Panel^ iter in panels) {
+		if (temp->Name != iter->Name && iter->BackColor != System::Drawing::SystemColors::ControlLightLight) {
+			iter->BackColor = System::Drawing::SystemColors::ControlLightLight;
+		}
+		else {
+			indexOfButtonBeingClicked = cnt;
+		}
+		++cnt;
+	}
 	//throw gcnew System::NotImplementedException();
 }
 
