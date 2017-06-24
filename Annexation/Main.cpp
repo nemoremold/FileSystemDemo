@@ -13,6 +13,7 @@
 //  0.3.4.170623_alpha  many internal bugs fixed and basic system implemented, alpha version reached
 //  0.3.5.170624_alpha  patches on file editing
 //  1.0.0.170624_beta   initial gui added, beta version reached
+//  1.0.1.170624_beta   some modifications were applied to gui
 //
 //
 //  Created by Emoin Lam on 22/06/2017.
