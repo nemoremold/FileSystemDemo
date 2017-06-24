@@ -67,6 +67,10 @@ namespace Annexation {
 	private: System::Windows::Forms::Label^  OPERATE;
 	private: System::Windows::Forms::Label^  ORGANIZE;
 	private: System::Windows::Forms::Label^  NEW;
+	private: System::Windows::Forms::Label^  fileSizeMark;
+	private: System::Windows::Forms::ProgressBar^  diskUsedBar;
+	private: System::Windows::Forms::Label^  diskUsedPercentage;
+
 
 
 
@@ -124,10 +128,14 @@ namespace Annexation {
 			this->NEW = (gcnew System::Windows::Forms::Label());
 			this->ORGANIZE = (gcnew System::Windows::Forms::Label());
 			this->OPERATE = (gcnew System::Windows::Forms::Label());
+			this->fileSizeMark = (gcnew System::Windows::Forms::Label());
+			this->diskUsedBar = (gcnew System::Windows::Forms::ProgressBar());
+			this->diskUsedPercentage = (gcnew System::Windows::Forms::Label());
 			this->topPanel->SuspendLayout();
 			this->menuStrip1->SuspendLayout();
 			this->buttonLayoutPanel->SuspendLayout();
 			this->mainPanel->SuspendLayout();
+			this->buttomPanel->SuspendLayout();
 			this->pathPanel->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->ContentSplitContainer))->BeginInit();
 			this->ContentSplitContainer->SuspendLayout();
@@ -172,6 +180,8 @@ namespace Annexation {
 				this->formatToolStripMenuItem,
 					this->exitToolStripMenuItem
 			});
+			this->fileSystemToolStripMenuItem->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
 			this->fileSystemToolStripMenuItem->Name = L"fileSystemToolStripMenuItem";
 			this->fileSystemToolStripMenuItem->Size = System::Drawing::Size(99, 24);
 			this->fileSystemToolStripMenuItem->Text = L"FileSystem";
@@ -179,18 +189,20 @@ namespace Annexation {
 			// formatToolStripMenuItem
 			// 
 			this->formatToolStripMenuItem->Name = L"formatToolStripMenuItem";
-			this->formatToolStripMenuItem->Size = System::Drawing::Size(133, 26);
+			this->formatToolStripMenuItem->Size = System::Drawing::Size(181, 26);
 			this->formatToolStripMenuItem->Text = L"format";
 			// 
 			// exitToolStripMenuItem
 			// 
 			this->exitToolStripMenuItem->Name = L"exitToolStripMenuItem";
-			this->exitToolStripMenuItem->Size = System::Drawing::Size(133, 26);
+			this->exitToolStripMenuItem->Size = System::Drawing::Size(181, 26);
 			this->exitToolStripMenuItem->Text = L"exit";
 			// 
 			// homepageToolStripMenuItem
 			// 
 			this->homepageToolStripMenuItem->BackColor = System::Drawing::SystemColors::Control;
+			this->homepageToolStripMenuItem->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(134)));
 			this->homepageToolStripMenuItem->Name = L"homepageToolStripMenuItem";
 			this->homepageToolStripMenuItem->Size = System::Drawing::Size(103, 24);
 			this->homepageToolStripMenuItem->Text = L"Homepage";
@@ -220,6 +232,8 @@ namespace Annexation {
 			this->createFolder->FlatAppearance->MouseDownBackColor = System::Drawing::SystemColors::GradientActiveCaption;
 			this->createFolder->FlatAppearance->MouseOverBackColor = System::Drawing::SystemColors::GradientInactiveCaption;
 			this->createFolder->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->createFolder->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
 			this->createFolder->Location = System::Drawing::Point(0, 5);
 			this->createFolder->Margin = System::Windows::Forms::Padding(0, 5, 0, 5);
 			this->createFolder->Name = L"createFolder";
@@ -235,6 +249,8 @@ namespace Annexation {
 			this->createFile->FlatAppearance->MouseDownBackColor = System::Drawing::SystemColors::GradientActiveCaption;
 			this->createFile->FlatAppearance->MouseOverBackColor = System::Drawing::SystemColors::GradientInactiveCaption;
 			this->createFile->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->createFile->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
 			this->createFile->Location = System::Drawing::Point(76, 5);
 			this->createFile->Margin = System::Windows::Forms::Padding(1, 5, 5, 5);
 			this->createFile->Name = L"createFile";
@@ -259,12 +275,14 @@ namespace Annexation {
 			this->remove->FlatAppearance->MouseDownBackColor = System::Drawing::SystemColors::GradientActiveCaption;
 			this->remove->FlatAppearance->MouseOverBackColor = System::Drawing::SystemColors::GradientInactiveCaption;
 			this->remove->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->remove->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
 			this->remove->Location = System::Drawing::Point(162, 5);
 			this->remove->Margin = System::Windows::Forms::Padding(5, 5, 0, 5);
 			this->remove->Name = L"remove";
 			this->remove->Size = System::Drawing::Size(75, 100);
 			this->remove->TabIndex = 1;
-			this->remove->Text = L"remove";
+			this->remove->Text = L"delete";
 			this->remove->UseVisualStyleBackColor = true;
 			// 
 			// rename
@@ -274,12 +292,14 @@ namespace Annexation {
 			this->rename->FlatAppearance->MouseDownBackColor = System::Drawing::SystemColors::GradientActiveCaption;
 			this->rename->FlatAppearance->MouseOverBackColor = System::Drawing::SystemColors::GradientInactiveCaption;
 			this->rename->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->rename->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
 			this->rename->Location = System::Drawing::Point(238, 5);
 			this->rename->Margin = System::Windows::Forms::Padding(1, 5, 5, 5);
 			this->rename->Name = L"rename";
 			this->rename->Size = System::Drawing::Size(75, 100);
 			this->rename->TabIndex = 2;
-			this->rename->Text = L"rename";
+			this->rename->Text = L"new name";
 			this->rename->UseVisualStyleBackColor = true;
 			// 
 			// divideLine2
@@ -298,6 +318,8 @@ namespace Annexation {
 			this->open->FlatAppearance->MouseDownBackColor = System::Drawing::SystemColors::GradientActiveCaption;
 			this->open->FlatAppearance->MouseOverBackColor = System::Drawing::SystemColors::GradientInactiveCaption;
 			this->open->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->open->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(134)));
 			this->open->Location = System::Drawing::Point(324, 5);
 			this->open->Margin = System::Windows::Forms::Padding(5, 5, 0, 5);
 			this->open->Name = L"open";
@@ -314,6 +336,8 @@ namespace Annexation {
 			this->closeFile->FlatAppearance->MouseDownBackColor = System::Drawing::SystemColors::GradientActiveCaption;
 			this->closeFile->FlatAppearance->MouseOverBackColor = System::Drawing::SystemColors::GradientInactiveCaption;
 			this->closeFile->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->closeFile->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(134)));
 			this->closeFile->Location = System::Drawing::Point(400, 5);
 			this->closeFile->Margin = System::Windows::Forms::Padding(1, 5, 5, 5);
 			this->closeFile->Name = L"closeFile";
@@ -342,6 +366,9 @@ namespace Annexation {
 			// 
 			this->buttomPanel->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left)
 				| System::Windows::Forms::AnchorStyles::Right));
+			this->buttomPanel->Controls->Add(this->diskUsedPercentage);
+			this->buttomPanel->Controls->Add(this->diskUsedBar);
+			this->buttomPanel->Controls->Add(this->fileSizeMark);
 			this->buttomPanel->Location = System::Drawing::Point(0, 480);
 			this->buttomPanel->Name = L"buttomPanel";
 			this->buttomPanel->Size = System::Drawing::Size(1080, 21);
@@ -378,20 +405,32 @@ namespace Annexation {
 			// 
 			this->refreshButton->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
 			this->refreshButton->BackColor = System::Drawing::SystemColors::Control;
-			this->refreshButton->FlatStyle = System::Windows::Forms::FlatStyle::System;
+			this->refreshButton->FlatAppearance->BorderSize = 0;
+			this->refreshButton->FlatAppearance->MouseDownBackColor = System::Drawing::SystemColors::GradientActiveCaption;
+			this->refreshButton->FlatAppearance->MouseOverBackColor = System::Drawing::SystemColors::GradientInactiveCaption;
+			this->refreshButton->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->refreshButton->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->refreshButton->ForeColor = System::Drawing::SystemColors::ControlDarkDark;
 			this->refreshButton->Location = System::Drawing::Point(970, 4);
 			this->refreshButton->Margin = System::Windows::Forms::Padding(1, 0, 5, 0);
 			this->refreshButton->MinimumSize = System::Drawing::Size(105, 29);
 			this->refreshButton->Name = L"refreshButton";
 			this->refreshButton->Size = System::Drawing::Size(105, 29);
 			this->refreshButton->TabIndex = 2;
-			this->refreshButton->Text = L"refresh";
+			this->refreshButton->Text = L"REFRESH";
 			this->refreshButton->UseVisualStyleBackColor = false;
 			// 
 			// backButton
 			// 
 			this->backButton->BackColor = System::Drawing::SystemColors::Control;
-			this->backButton->FlatStyle = System::Windows::Forms::FlatStyle::System;
+			this->backButton->FlatAppearance->BorderSize = 0;
+			this->backButton->FlatAppearance->MouseDownBackColor = System::Drawing::SystemColors::GradientActiveCaption;
+			this->backButton->FlatAppearance->MouseOverBackColor = System::Drawing::SystemColors::GradientInactiveCaption;
+			this->backButton->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->backButton->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->backButton->ForeColor = System::Drawing::SystemColors::ControlDarkDark;
 			this->backButton->Location = System::Drawing::Point(5, 4);
 			this->backButton->Margin = System::Windows::Forms::Padding(5, 0, 1, 0);
 			this->backButton->MinimumSize = System::Drawing::Size(105, 29);
@@ -436,32 +475,76 @@ namespace Annexation {
 			// NEW
 			// 
 			this->NEW->AutoSize = true;
-			this->NEW->Location = System::Drawing::Point(63, 135);
+			this->NEW->Font = (gcnew System::Drawing::Font(L"Georgia", 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->NEW->ForeColor = System::Drawing::SystemColors::ButtonShadow;
+			this->NEW->Location = System::Drawing::Point(54, 135);
 			this->NEW->Margin = System::Windows::Forms::Padding(0);
 			this->NEW->Name = L"NEW";
-			this->NEW->Size = System::Drawing::Size(31, 15);
+			this->NEW->Size = System::Drawing::Size(49, 18);
 			this->NEW->TabIndex = 9;
 			this->NEW->Text = L"NEW";
 			// 
 			// ORGANIZE
 			// 
 			this->ORGANIZE->AutoSize = true;
-			this->ORGANIZE->Location = System::Drawing::Point(202, 135);
+			this->ORGANIZE->Font = (gcnew System::Drawing::Font(L"Georgia", 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->ORGANIZE->ForeColor = System::Drawing::SystemColors::ButtonShadow;
+			this->ORGANIZE->Location = System::Drawing::Point(189, 135);
 			this->ORGANIZE->Margin = System::Windows::Forms::Padding(0);
 			this->ORGANIZE->Name = L"ORGANIZE";
-			this->ORGANIZE->Size = System::Drawing::Size(71, 15);
+			this->ORGANIZE->Size = System::Drawing::Size(97, 18);
 			this->ORGANIZE->TabIndex = 10;
 			this->ORGANIZE->Text = L"ORGANIZE";
 			// 
 			// OPERATE
 			// 
 			this->OPERATE->AutoSize = true;
-			this->OPERATE->Location = System::Drawing::Point(368, 135);
+			this->OPERATE->Font = (gcnew System::Drawing::Font(L"Georgia", 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->OPERATE->ForeColor = System::Drawing::SystemColors::ButtonShadow;
+			this->OPERATE->Location = System::Drawing::Point(356, 135);
 			this->OPERATE->Margin = System::Windows::Forms::Padding(0);
 			this->OPERATE->Name = L"OPERATE";
-			this->OPERATE->Size = System::Drawing::Size(63, 15);
+			this->OPERATE->Size = System::Drawing::Size(87, 18);
 			this->OPERATE->TabIndex = 11;
 			this->OPERATE->Text = L"OPERATE";
+			// 
+			// fileSizeMark
+			// 
+			this->fileSizeMark->AutoSize = true;
+			this->fileSizeMark->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(134)));
+			this->fileSizeMark->Location = System::Drawing::Point(0, 1);
+			this->fileSizeMark->Name = L"fileSizeMark";
+			this->fileSizeMark->Size = System::Drawing::Size(81, 20);
+			this->fileSizeMark->TabIndex = 0;
+			this->fileSizeMark->Text = L"DISK SIZE:";
+			// 
+			// diskUsedBar
+			// 
+			this->diskUsedBar->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
+			this->diskUsedBar->Location = System::Drawing::Point(977, 6);
+			this->diskUsedBar->Margin = System::Windows::Forms::Padding(5);
+			this->diskUsedBar->Name = L"diskUsedBar";
+			this->diskUsedBar->Size = System::Drawing::Size(100, 12);
+			this->diskUsedBar->Step = 1;
+			this->diskUsedBar->Style = System::Windows::Forms::ProgressBarStyle::Continuous;
+			this->diskUsedBar->TabIndex = 1;
+			// 
+			// diskUsedPercentage
+			// 
+			this->diskUsedPercentage->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
+			this->diskUsedPercentage->AutoSize = true;
+			this->diskUsedPercentage->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(134)));
+			this->diskUsedPercentage->Location = System::Drawing::Point(877, 1);
+			this->diskUsedPercentage->Margin = System::Windows::Forms::Padding(3, 0, 8, 0);
+			this->diskUsedPercentage->Name = L"diskUsedPercentage";
+			this->diskUsedPercentage->Size = System::Drawing::Size(90, 20);
+			this->diskUsedPercentage->TabIndex = 2;
+			this->diskUsedPercentage->Text = L"DISK USED:";
 			// 
 			// AnnexationForm
 			// 
@@ -473,19 +556,22 @@ namespace Annexation {
 			this->Controls->Add(this->topPanel);
 			this->MainMenuStrip = this->menuStrip1;
 			this->MinimumSize = System::Drawing::Size(523, 500);
-			this->Name = L"AnnexationForm";
-			this->Text = L"AnnexationForm";
+			this->Name = L"Annexation File System v1.0.2.170624_beta";
+			this->Text = L"Annexation File System v1.0.2.170624_beta";
 			this->topPanel->ResumeLayout(false);
 			this->topPanel->PerformLayout();
 			this->menuStrip1->ResumeLayout(false);
 			this->menuStrip1->PerformLayout();
 			this->buttonLayoutPanel->ResumeLayout(false);
 			this->mainPanel->ResumeLayout(false);
+			this->buttomPanel->ResumeLayout(false);
+			this->buttomPanel->PerformLayout();
 			this->pathPanel->ResumeLayout(false);
 			this->pathPanel->PerformLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->ContentSplitContainer))->EndInit();
 			this->ContentSplitContainer->ResumeLayout(false);
 			this->ResumeLayout(false);
+			this->Icon = gcnew System::Drawing::Icon("1.ico");
 
 		}
 #pragma endregion

@@ -161,12 +161,20 @@
     <ClInclude Include="AnnexationMapping.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="INode.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SuperBlock.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AnnexationForm.resx">
       <DependentUpon>AnnexationForm.h</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\icon\1.ico" />
+    <Image Include="1.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Annexation.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
