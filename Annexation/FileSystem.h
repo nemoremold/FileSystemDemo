@@ -53,6 +53,41 @@ namespace Annexation {
 		int getCurrentINodeIndex() const {
 			return _currentINodeIndex;
 		}
+		int getCurrentDiskSize() {
+			INode* calculateSize = new INode;
+			fseek(_systemDisk, INODE_BEGIN_INDEX_IN_MEMORY, SEEK_SET);
+			fread(calculateSize, sizeof(INode), 1, _systemDisk);
+
+			/*std::ofstream temp;
+			temp.open("Parser.txt");
+			temp << calculateSize->getFileSize();
+			temp.close();
+			std::ifstream temp2;
+			std::string parser;
+			temp2.open("Parser.txt");
+			temp2 >> parser;
+			System::String^ deliverer = gcnew System::String(parser.c_str());
+			return deliverer;*/
+			return calculateSize->getFileSize();
+		}
+		System::String^ Parse(int value) const {
+			std::ofstream temp;
+			temp.open("Parser.txt");
+			temp << value;
+			temp.close();
+			std::ifstream temp2;
+			std::string parser;
+			temp2.open("Parser.txt");
+			temp2 >> parser;
+			System::String^ deliverer = gcnew System::String(parser.c_str());
+			return deliverer;
+		}
+		bool checkNameExistance(std::string name) {
+			if (getInodeIndexOfName(name) != BAD_MAPPING) {
+				return false;
+			}
+			return true;
+		}
 
 		bool initializeFileSystem();
 		void formatFileSystem();
