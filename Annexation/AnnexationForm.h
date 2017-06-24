@@ -31,6 +31,18 @@ namespace Annexation {
 	private: System::Windows::Forms::Panel^  divideLine6;
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 	public:
 		Thread^ UIController;
 
@@ -44,6 +56,114 @@ namespace Annexation {
 			UIController->Start();
 		}
 
+		void relayout() {
+			//this->ContentSplitContainer->Panel2->Controls->Clear();
+			/*int length = panels->GetLength;
+			for (int i = 0; i < length; ++i) {
+			panels[i]->Controls->Clear();
+			}*/
+
+			int fileCount = fileSystem->getFileCount();
+			this->panels = (gcnew array<System::Windows::Forms::Panel^>(fileCount));
+			this->fileNameLabels = (gcnew array<System::Windows::Forms::Label^>(fileCount));
+			this->fileTypeLabels = (gcnew array<System::Windows::Forms::Label^>(fileCount));
+			this->fileSizeLabels = (gcnew array<System::Windows::Forms::Label^>(fileCount));
+			this->pictureBoxes = (gcnew array<System::Windows::Forms::PictureBox^>(fileCount));
+			for (int i = 0; i < fileCount; ++i) {
+				System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(AnnexationForm::typeid));
+				this->panels[i] = (gcnew System::Windows::Forms::Panel());
+				this->fileNameLabels[i] = (gcnew System::Windows::Forms::Label());
+				this->fileTypeLabels[i] = (gcnew System::Windows::Forms::Label());
+				this->fileSizeLabels[i] = (gcnew System::Windows::Forms::Label());
+				this->pictureBoxes[i] = (gcnew System::Windows::Forms::PictureBox());
+				//
+				// layout suspend
+				//
+				this->panels[i]->SuspendLayout();
+				(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBoxes[i]))->BeginInit();
+				this->ContentSplitContainer->Panel2->Controls->Add(this->panels[i]);
+				//
+				// panel
+				//
+				this->panels[i]->BackColor = System::Drawing::SystemColors::ControlLightLight;
+				this->panels[i]->Controls->Add(this->fileSizeLabels[i]);
+				this->panels[i]->Controls->Add(this->fileTypeLabels[i]);
+				this->panels[i]->Controls->Add(this->fileNameLabels[i]);
+				this->panels[i]->Controls->Add(this->pictureBoxes[i]);
+				this->panels[i]->Location = System::Drawing::Point(22, 36 + i * 26);
+				this->panels[i]->Margin = System::Windows::Forms::Padding(0);
+				this->panels[i]->Name = L"panel" + i.ToString();
+				this->panels[i]->Size = System::Drawing::Size(633, 26);
+				this->panels[i]->TabIndex = 6;
+				this->panels[i]->MouseClick += gcnew System::Windows::Forms::MouseEventHandler(this, &AnnexationForm::OnMouseClick);
+				//this->panels[i]->MouseCaptureChanged += gcnew System::EventHandler(this, &AnnexationForm::OnMouseCaptureChanged);
+				this->panels[i]->MouseEnter += gcnew System::EventHandler(this, &AnnexationForm::OnMouseEnter);
+				this->panels[i]->MouseLeave += gcnew System::EventHandler(this, &AnnexationForm::OnMouseLeave);
+				
+				//
+				// pictureBox
+				//
+				if (fileSystem->getFileTypeOfDirectoryId(i) == "FILE") {
+					this->pictureBoxes[i]->Image = Image::FromFile("fileicon_middle.ico");
+				}
+				else {
+					this->pictureBoxes[i]->Image = Image::FromFile("foldericon_middle.ico");
+				}
+				this->pictureBoxes[i]->Location = System::Drawing::Point(1, -1);
+				this->pictureBoxes[i]->Name = L"pictureBoxes" + i.ToString();
+				this->pictureBoxes[i]->Size = System::Drawing::Size(24, 24);
+				this->pictureBoxes[i]->TabIndex = 0;
+				this->pictureBoxes[i]->TabStop = false;
+				// 
+				// fileNameLabel
+				// 
+				this->fileNameLabels[i]->AutoSize = true;
+				this->fileNameLabels[i]->CausesValidation = false;
+				this->fileNameLabels[i]->Enabled = false;
+				this->fileNameLabels[i]->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+					static_cast<System::Byte>(134)));
+				this->fileNameLabels[i]->Location = System::Drawing::Point(25, 4);
+				this->fileNameLabels[i]->Name = L"fileNameLabels" + i.ToString();
+				this->fileNameLabels[i]->Size = System::Drawing::Size(53, 20);
+				this->fileNameLabels[i]->TabIndex = 1;
+				this->fileNameLabels[i]->Text = fileSystem->getNameOfDirectoryId(i);
+				// 
+				// fileTypeLabel
+				// 
+				this->fileTypeLabels[i]->AutoSize = true;
+				this->fileTypeLabels[i]->CausesValidation = false;
+				this->fileTypeLabels[i]->Enabled = false;
+				this->fileTypeLabels[i]->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+					static_cast<System::Byte>(134)));
+				this->fileTypeLabels[i]->Location = System::Drawing::Point(246, 4);
+				this->fileTypeLabels[i]->Name = L"fileTypeLabels" + i.ToString();
+				this->fileTypeLabels[i]->Size = System::Drawing::Size(55, 15);
+				this->fileTypeLabels[i]->TabIndex = 2;
+				this->fileTypeLabels[i]->Text = fileSystem->getFileTypeOfDirectoryId(i);
+				// 
+				// fileSizeLabel
+				// 
+				this->fileSizeLabels[i]->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
+				this->fileSizeLabels[i]->AutoSize = false;
+				this->fileSizeLabels[i]->CausesValidation = false;
+				this->fileSizeLabels[i]->Enabled = false;
+				this->fileSizeLabels[i]->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+					static_cast<System::Byte>(134)));
+				this->fileSizeLabels[i]->Location = System::Drawing::Point(429, 4);
+				this->fileSizeLabels[i]->Name = L"fileSizeLabels" + i.ToString();
+				this->fileSizeLabels[i]->Size = System::Drawing::Size(204, 15);
+				this->fileSizeLabels[i]->TextAlign = System::Drawing::ContentAlignment::TopRight;
+				this->fileSizeLabels[i]->TabIndex = 3;
+				this->fileSizeLabels[i]->Text = fileSystem->Parse(fileSystem->getFileSizeOfDirectoryId(i)) + " B";
+				//
+				// resume layout
+				//
+				this->panels[i]->ResumeLayout(false);
+				this->panels[i]->PerformLayout();
+				(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBoxes[i]))->EndInit();
+			}
+		}
+
 		void reset() {
 			newFileName = 1;
 			newFolderName = 1;
@@ -52,6 +172,8 @@ namespace Annexation {
 			this->diskSizeValue->Text += " B";
 			this->diskUsedBar->Value = diskUsedPercentageInNumber;
 			this->path->Text = fileSystem->getPath();
+
+			relayout();
 		}
 
 		void UIControl() {
@@ -73,6 +195,12 @@ namespace Annexation {
 		int newFolderName;
 		int newFileName;
 		System::Int32 diskUsedPercentageInNumber;
+		array<System::Windows::Forms::Panel^>^ panels;
+		array<System::Windows::Forms::Label^>^ fileNameLabels;
+		array<System::Windows::Forms::Label^>^ fileTypeLabels;
+		array<System::Windows::Forms::Label^>^ fileSizeLabels;
+		array<System::Windows::Forms::PictureBox^>^ pictureBoxes;
+
 	private: System::Windows::Forms::Panel^  fileName;
 
 	private: System::Windows::Forms::Label^  diskSizeValue;
@@ -87,6 +215,7 @@ namespace Annexation {
 				delete components;
 			}
 		}
+
 	private: System::Windows::Forms::Panel^  topPanel;
 	private: System::Windows::Forms::Panel^  mainPanel;
 	private: System::Windows::Forms::Panel^  pathPanel;
@@ -170,6 +299,7 @@ namespace Annexation {
 			this->refreshButton = (gcnew System::Windows::Forms::Button());
 			this->backButton = (gcnew System::Windows::Forms::Button());
 			this->ContentSplitContainer = (gcnew System::Windows::Forms::SplitContainer());
+			this->divideLine6 = (gcnew System::Windows::Forms::Panel());
 			this->divideLine5 = (gcnew System::Windows::Forms::Panel());
 			this->filesize = (gcnew System::Windows::Forms::Panel());
 			this->fileSIZELABEL = (gcnew System::Windows::Forms::Label());
@@ -178,7 +308,6 @@ namespace Annexation {
 			this->fileTYPELABEL = (gcnew System::Windows::Forms::Label());
 			this->fileName = (gcnew System::Windows::Forms::Panel());
 			this->fileNAMELABEL = (gcnew System::Windows::Forms::Label());
-			this->divideLine6 = (gcnew System::Windows::Forms::Panel());
 			this->topPanel->SuspendLayout();
 			this->menuStrip1->SuspendLayout();
 			this->buttonLayoutPanel->SuspendLayout();
@@ -623,12 +752,20 @@ namespace Annexation {
 			this->ContentSplitContainer->SplitterWidth = 1;
 			this->ContentSplitContainer->TabIndex = 1;
 			// 
+			// divideLine6
+			// 
+			this->divideLine6->BackColor = System::Drawing::SystemColors::ControlLight;
+			this->divideLine6->Location = System::Drawing::Point(872, 6);
+			this->divideLine6->Name = L"divideLine6";
+			this->divideLine6->Size = System::Drawing::Size(1, 30);
+			this->divideLine6->TabIndex = 5;
+			// 
 			// divideLine5
 			// 
 			this->divideLine5->BackColor = System::Drawing::SystemColors::ControlLight;
 			this->divideLine5->Location = System::Drawing::Point(602, 6);
 			this->divideLine5->Name = L"divideLine5";
-			this->divideLine5->Size = System::Drawing::Size(1, 25);
+			this->divideLine5->Size = System::Drawing::Size(1, 30);
 			this->divideLine5->TabIndex = 4;
 			// 
 			// filesize
@@ -636,12 +773,12 @@ namespace Annexation {
 			this->filesize->Controls->Add(this->fileSIZELABEL);
 			this->filesize->Location = System::Drawing::Point(602, 6);
 			this->filesize->Name = L"filesize";
-			this->filesize->Size = System::Drawing::Size(280, 25);
+			this->filesize->Size = System::Drawing::Size(272, 30);
 			this->filesize->TabIndex = 3;
-			this->filesize->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &AnnexationForm::OnMouseDown_FILESIZE);
-			this->filesize->MouseEnter += gcnew System::EventHandler(this, &AnnexationForm::OnMouseEnter_FILESIZE);
-			this->filesize->MouseLeave += gcnew System::EventHandler(this, &AnnexationForm::OnMouseLeave_FILESIZE);
-			this->filesize->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &AnnexationForm::OnMouseUp_FILESIZE);
+			this->filesize->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &AnnexationForm::OnMouseDown);
+			this->filesize->MouseEnter += gcnew System::EventHandler(this, &AnnexationForm::OnMouseEnter);
+			this->filesize->MouseLeave += gcnew System::EventHandler(this, &AnnexationForm::OnMouseLeave);
+			this->filesize->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &AnnexationForm::OnMouseUp);
 			// 
 			// fileSIZELABEL
 			// 
@@ -651,7 +788,7 @@ namespace Annexation {
 			this->fileSIZELABEL->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(134)));
 			this->fileSIZELABEL->ForeColor = System::Drawing::SystemColors::ActiveCaption;
-			this->fileSIZELABEL->Location = System::Drawing::Point(5, 2);
+			this->fileSIZELABEL->Location = System::Drawing::Point(5, 3);
 			this->fileSIZELABEL->Margin = System::Windows::Forms::Padding(1, 0, 1, 0);
 			this->fileSIZELABEL->Name = L"fileSIZELABEL";
 			this->fileSIZELABEL->Size = System::Drawing::Size(58, 20);
@@ -664,7 +801,7 @@ namespace Annexation {
 			this->divideLine4->Location = System::Drawing::Point(352, 6);
 			this->divideLine4->Margin = System::Windows::Forms::Padding(0);
 			this->divideLine4->Name = L"divideLine4";
-			this->divideLine4->Size = System::Drawing::Size(1, 25);
+			this->divideLine4->Size = System::Drawing::Size(1, 30);
 			this->divideLine4->TabIndex = 1;
 			// 
 			// filetype
@@ -672,12 +809,12 @@ namespace Annexation {
 			this->filetype->Controls->Add(this->fileTYPELABEL);
 			this->filetype->Location = System::Drawing::Point(352, 6);
 			this->filetype->Name = L"filetype";
-			this->filetype->Size = System::Drawing::Size(250, 25);
+			this->filetype->Size = System::Drawing::Size(250, 30);
 			this->filetype->TabIndex = 2;
-			this->filetype->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &AnnexationForm::OnMouseDown_FILETYPE);
-			this->filetype->MouseEnter += gcnew System::EventHandler(this, &AnnexationForm::OnMouseEnter_FILETYPE);
-			this->filetype->MouseLeave += gcnew System::EventHandler(this, &AnnexationForm::OnMouseLeave_FILETYPE);
-			this->filetype->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &AnnexationForm::OnMouseUp_FILETYPE);
+			this->filetype->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &AnnexationForm::OnMouseDown);
+			this->filetype->MouseEnter += gcnew System::EventHandler(this, &AnnexationForm::OnMouseEnter);
+			this->filetype->MouseLeave += gcnew System::EventHandler(this, &AnnexationForm::OnMouseLeave);
+			this->filetype->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &AnnexationForm::OnMouseUp);
 			// 
 			// fileTYPELABEL
 			// 
@@ -687,7 +824,7 @@ namespace Annexation {
 			this->fileTYPELABEL->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(134)));
 			this->fileTYPELABEL->ForeColor = System::Drawing::SystemColors::ActiveCaption;
-			this->fileTYPELABEL->Location = System::Drawing::Point(5, 2);
+			this->fileTYPELABEL->Location = System::Drawing::Point(5, 3);
 			this->fileTYPELABEL->Margin = System::Windows::Forms::Padding(1, 0, 1, 0);
 			this->fileTYPELABEL->Name = L"fileTYPELABEL";
 			this->fileTYPELABEL->Size = System::Drawing::Size(64, 20);
@@ -701,12 +838,12 @@ namespace Annexation {
 			this->fileName->Location = System::Drawing::Point(2, 6);
 			this->fileName->Margin = System::Windows::Forms::Padding(0);
 			this->fileName->Name = L"fileName";
-			this->fileName->Size = System::Drawing::Size(350, 25);
+			this->fileName->Size = System::Drawing::Size(350, 30);
 			this->fileName->TabIndex = 0;
-			this->fileName->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &AnnexationForm::OnMouseDown_FILENAME);
-			this->fileName->MouseEnter += gcnew System::EventHandler(this, &AnnexationForm::OnMouseEnter_FILENAME);
-			this->fileName->MouseLeave += gcnew System::EventHandler(this, &AnnexationForm::OnMouseLeave_FILENAME);
-			this->fileName->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &AnnexationForm::OnMouseUp_FILENAME);
+			this->fileName->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &AnnexationForm::OnMouseDown);
+			this->fileName->MouseEnter += gcnew System::EventHandler(this, &AnnexationForm::OnMouseEnter);
+			this->fileName->MouseLeave += gcnew System::EventHandler(this, &AnnexationForm::OnMouseLeave);
+			this->fileName->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &AnnexationForm::OnMouseUp);
 			// 
 			// fileNAMELABEL
 			// 
@@ -716,26 +853,19 @@ namespace Annexation {
 			this->fileNAMELABEL->Font = (gcnew System::Drawing::Font(L"Microsoft YaHei UI", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(134)));
 			this->fileNAMELABEL->ForeColor = System::Drawing::SystemColors::ActiveCaption;
-			this->fileNAMELABEL->Location = System::Drawing::Point(5, 2);
+			this->fileNAMELABEL->Location = System::Drawing::Point(5, 3);
 			this->fileNAMELABEL->Margin = System::Windows::Forms::Padding(1, 0, 1, 0);
 			this->fileNAMELABEL->Name = L"fileNAMELABEL";
 			this->fileNAMELABEL->Size = System::Drawing::Size(71, 20);
 			this->fileNAMELABEL->TabIndex = 0;
 			this->fileNAMELABEL->Text = L"filename";
 			// 
-			// divideLine6
-			// 
-			this->divideLine6->BackColor = System::Drawing::SystemColors::ControlLight;
-			this->divideLine6->Location = System::Drawing::Point(872, 6);
-			this->divideLine6->Name = L"divideLine6";
-			this->divideLine6->Size = System::Drawing::Size(1, 25);
-			this->divideLine6->TabIndex = 5;
-			// 
 			// AnnexationForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 15);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackColor = System::Drawing::SystemColors::ControlLightLight;
+			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
 			this->ClientSize = System::Drawing::Size(1080, 660);
 			this->Controls->Add(this->mainPanel);
 			this->Controls->Add(this->topPanel);
@@ -769,6 +899,7 @@ namespace Annexation {
 #pragma endregion
 private: System::Void formatToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 	fileSystem->formatFileSystem();
+	reset();
 }
 private: System::Void exitToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 	willExitSystem = true;
@@ -779,9 +910,11 @@ private: System::Void exitToolStripMenuItem_Click(System::Object^  sender, Syste
 }
 private: System::Void refreshButton_Click(System::Object^  sender, System::EventArgs^  e) {
 	fileSystem->enterDirectory(fileSystem->getCurrentINodeIndex(), ".");
+	reset();
 }
 private: System::Void backButton_Click(System::Object^  sender, System::EventArgs^  e) {
 	fileSystem->enterDirectory(fileSystem->getCurrentINodeIndex(), "..");
+	reset();
 }
 private: System::Void createFolder_Click(System::Object^  sender, System::EventArgs^  e) {
 	std::string defaultName = "new folder";
@@ -803,96 +936,58 @@ private: System::Void createFile_Click(System::Object^  sender, System::EventArg
 	fileSystem->makeFile(fileSystem->getCurrentINodeIndex(), name, FILE);
 	reset();
 }
-		 void OnMouseLeave_FILENAME(System::Object ^sender, System::EventArgs ^e);
-		 void OnMouseEnter_FILENAME(System::Object ^sender, System::EventArgs ^e);
-		 void OnMouseDown_FILENAME(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
-		 void OnMouseUp_FILENAME(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
-		 void OnMouseLeave_FILETYPE(System::Object ^sender, System::EventArgs ^e);
-		 void OnMouseEnter_FILETYPE(System::Object ^sender, System::EventArgs ^e);
-		 void OnMouseDown_FILETYPE(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
-		 void OnMouseUp_FILETYPE(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
-		 void OnMouseLeave_FILESIZE(System::Object ^sender, System::EventArgs ^e);
-		 void OnMouseEnter_FILESIZE(System::Object ^sender, System::EventArgs ^e);
-		 void OnMouseDown_FILESIZE(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
-		 void OnMouseUp_FILESIZE(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
+
+		 void OnMouseLeave(System::Object ^sender, System::EventArgs ^e);
+		 void OnMouseEnter(System::Object ^sender, System::EventArgs ^e);
+		 void OnMouseDown(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
+		 void OnMouseUp(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
+		 void OnMouseClick(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
+		 //void OnMouseCaptureChanged(System::Object ^sender, System::EventArgs ^e);
 };
 }
 
-
-void Annexation::AnnexationForm::OnMouseEnter_FILENAME(System::Object ^sender, System::EventArgs ^e)
+void Annexation::AnnexationForm::OnMouseEnter(System::Object ^sender, System::EventArgs ^e)
 {
-	fileName->BackColor = System::Drawing::SystemColors::GradientInactiveCaption;
+	System::Windows::Forms::Panel^ temp = (Panel^)sender;
+	temp->BackColor = System::Drawing::SystemColors::GradientInactiveCaption;
 	//throw gcnew System::NotImplementedException();
 }
 
-void Annexation::AnnexationForm::OnMouseLeave_FILENAME(System::Object ^sender, System::EventArgs ^e)
+void Annexation::AnnexationForm::OnMouseLeave(System::Object ^sender, System::EventArgs ^e)
 {
-	fileName->BackColor = System::Drawing::SystemColors::ControlLightLight;
-	//throw gcnew System::NotImplementedException();
-}
-
-
-void Annexation::AnnexationForm::OnMouseDown_FILENAME(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e)
-{
-	fileName->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
+	System::Windows::Forms::Panel^ temp = (Panel^)sender;
+	temp->BackColor = System::Drawing::SystemColors::ControlLightLight;
 	//throw gcnew System::NotImplementedException();
 }
 
 
-void Annexation::AnnexationForm::OnMouseUp_FILENAME(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e)
+void Annexation::AnnexationForm::OnMouseDown(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e)
 {
-	fileName->BackColor = System::Drawing::SystemColors::GradientInactiveCaption;
-	//throw gcnew System::NotImplementedException();
-}
-
-void Annexation::AnnexationForm::OnMouseEnter_FILETYPE(System::Object ^sender, System::EventArgs ^e)
-{
-	filetype->BackColor = System::Drawing::SystemColors::GradientInactiveCaption;
-	//throw gcnew System::NotImplementedException();
-}
-
-void Annexation::AnnexationForm::OnMouseLeave_FILETYPE(System::Object ^sender, System::EventArgs ^e)
-{
-	filetype->BackColor = System::Drawing::SystemColors::ControlLightLight;
+	System::Windows::Forms::Panel^ temp = (Panel^)sender;
+	temp->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
 	//throw gcnew System::NotImplementedException();
 }
 
 
-void Annexation::AnnexationForm::OnMouseDown_FILETYPE(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e)
+void Annexation::AnnexationForm::OnMouseUp(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e)
 {
-	filetype->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
+	System::Windows::Forms::Panel^ temp = (Panel^)sender;
+	temp->BackColor = System::Drawing::SystemColors::GradientInactiveCaption;
 	//throw gcnew System::NotImplementedException();
 }
 
 
-void Annexation::AnnexationForm::OnMouseUp_FILETYPE(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e)
+void Annexation::AnnexationForm::OnMouseClick(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e)
 {
-	filetype->BackColor = System::Drawing::SystemColors::GradientInactiveCaption;
-	//throw gcnew System::NotImplementedException();
-}
-
-void Annexation::AnnexationForm::OnMouseEnter_FILESIZE(System::Object ^sender, System::EventArgs ^e)
-{
-	filesize->BackColor = System::Drawing::SystemColors::GradientInactiveCaption;
-	//throw gcnew System::NotImplementedException();
-}
-
-void Annexation::AnnexationForm::OnMouseLeave_FILESIZE(System::Object ^sender, System::EventArgs ^e)
-{
-	filesize->BackColor = System::Drawing::SystemColors::ControlLightLight;
+	System::Windows::Forms::Panel^ temp = (Panel^)sender;
+	temp->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
 	//throw gcnew System::NotImplementedException();
 }
 
 
-void Annexation::AnnexationForm::OnMouseDown_FILESIZE(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e)
+/*void Annexation::AnnexationForm::OnMouseCaptureChanged(System::Object ^sender, System::EventArgs ^e)
 {
-	filesize->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
+	System::Windows::Forms::Panel^ temp = (Panel^)sender;
+	temp->BackColor = System::Drawing::SystemColors::ControlDarkDark;
 	//throw gcnew System::NotImplementedException();
-}
-
-
-void Annexation::AnnexationForm::OnMouseUp_FILESIZE(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e)
-{
-	filesize->BackColor = System::Drawing::SystemColors::GradientInactiveCaption;
-	//throw gcnew System::NotImplementedException();
-}
+}*/

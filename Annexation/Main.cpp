@@ -16,6 +16,7 @@
 //  1.0.1.170624_beta   some modifications were applied to gui
 //  1.0.2.170624_beta   specific modifications of gui were applied
 //  1.1.0.170625_beta   specific modifications of gui were applied
+//  1.2.0.170625_beta   auto layout added
 //
 //
 //  Created by Emoin Lam on 22/06/2017.
@@ -39,4 +40,5 @@ void Main(array<String^>^ args)
 
 	Annexation::AnnexationForm form;
 	Application::Run(%form);
+	System::Environment::Exit(0);
 }

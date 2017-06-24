@@ -88,6 +88,30 @@ namespace Annexation {
 			}
 			return true;
 		}
+		int getFileCount() const {
+			return _directoryCount;
+		}
+		System::String^ getNameOfDirectoryId(int id) const {
+			System::String^ deliverer = gcnew System::String(_directory[id].getNameOfDirectory().c_str());
+			return deliverer;
+		}
+		System::String^ getFileTypeOfDirectoryId(int id) {
+			INode* temp = new INode;
+			int index = _directory[id].getINodeIndexOfDirectory();
+			fseek(_systemDisk, INODE_BEGIN_INDEX_IN_MEMORY + sizeof(INode) * index, SEEK_SET);
+			fread(temp, sizeof(INode), 1, _systemDisk);
+
+			std::string cur = (temp->getFileType() == FILE ? "FILE" : "DIRECTORY");
+			System::String^ deliverer = gcnew System::String(cur.c_str());
+			return deliverer;
+		}
+		int getFileSizeOfDirectoryId(int id) {
+			INode* temp = new INode;
+			int index = _directory[id].getINodeIndexOfDirectory();
+			fseek(_systemDisk, INODE_BEGIN_INDEX_IN_MEMORY + sizeof(INode) * index, SEEK_SET);
+			fread(temp, sizeof(INode), 1, _systemDisk);
+			return temp->getFileSize();
+		}
 
 		bool initializeFileSystem();
 		void formatFileSystem();
