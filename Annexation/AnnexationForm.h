@@ -52,8 +52,11 @@ namespace Annexation {
 			fileSystem = new FileSystem;
 			willExitSystem = false;
 			this->panels = nullptr;
+			fileSystem->formatFileSystem();
 			fileSystem->initializeFileSystem();
 			InitializeComponent();
+			diskMaxSize = fileSystem->Parse(MAX_FILE_SIZE);
+			diskMaxSize = (" B / " + diskMaxSize + " B");
 			reset();
 			UIController = gcnew Thread(gcnew ThreadStart(this, &AnnexationForm::UIControl));
 			UIController->Start();
@@ -166,7 +169,12 @@ namespace Annexation {
 				this->fileSizeLabels[i]->Size = System::Drawing::Size(204, 15);
 				this->fileSizeLabels[i]->TextAlign = System::Drawing::ContentAlignment::TopRight;
 				this->fileSizeLabels[i]->TabIndex = 3;
-				this->fileSizeLabels[i]->Text = fileSystem->Parse(fileSystem->getFileSizeOfDirectoryId(i + 2)) + " B";
+				if (fileSystem->getFileTypeOfDirectoryId(i + 2) == "FILE") {
+					this->fileSizeLabels[i]->Text = fileSystem->Parse(fileSystem->getFileSizeOfDirectoryId(i + 2)) + " B";
+				}
+				else {
+					this->fileSizeLabels[i]->Text = "";
+				}
 				//
 				// resume layout
 				//
@@ -180,9 +188,9 @@ namespace Annexation {
 			indexOfButtonBeingClicked = -1;
 			newFileName = 1;
 			newFolderName = 1;
-			diskUsedPercentageInNumber = fileSystem->getCurrentDiskSize() / (BLOCK_BEGIN_INDEX_IN_MEMORY + MAX_FILE_SIZE);
+			diskUsedPercentageInNumber = fileSystem->getCurrentDiskSize() / MAX_FILE_SIZE;
 			this->diskSizeValue->Text = fileSystem->Parse(fileSystem->getCurrentDiskSize());
-			this->diskSizeValue->Text += " B";
+			this->diskSizeValue->Text += diskMaxSize;
 			this->diskUsedBar->Value = diskUsedPercentageInNumber;
 			this->path->Text = fileSystem->getPath();
 
@@ -210,6 +218,18 @@ namespace Annexation {
 				else {
 					open->Enabled = true;
 				}
+				if (indexOfButtonBeingClicked == -1) {
+					rename->Enabled = false;
+				}
+				else {
+					rename->Enabled = true;
+				}
+				if (indexOfButtonBeingClicked == -1) {
+					closeFile->Enabled = false;
+				}
+				else {
+					closeFile->Enabled = true;
+				}
 				UIController->Sleep(100);
 			}
 
@@ -221,6 +241,7 @@ namespace Annexation {
 		int newFolderName;
 		int newFileName;
 		System::Int32 diskUsedPercentageInNumber;
+		System::String^ diskMaxSize;
 		array<System::Windows::Forms::Panel^>^ panels;
 		array<System::Windows::Forms::Label^>^ fileNameLabels;
 		array<System::Windows::Forms::Label^>^ fileTypeLabels;

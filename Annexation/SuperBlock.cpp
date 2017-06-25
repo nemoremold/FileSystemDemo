@@ -14,6 +14,7 @@ SuperBlock::SuperBlock() {
 	_blockMap = BlockAnnexationMap();
 	_blockUsedCount = 0;
 	_iNodeUsedCount = 0;
+	_currentDiskSize = 0;
 }
 
 SuperBlock::~SuperBlock() {
@@ -24,6 +25,7 @@ void SuperBlock::initialize() {
 	_blockMap = BlockAnnexationMap();
 	_blockUsedCount = 0;
 	_iNodeUsedCount = 0;
+	_currentDiskSize = 0;
 
 	if (acquireNewINode() == BAD_MAPPING) {
 		return;

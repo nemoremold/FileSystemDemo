@@ -327,6 +327,7 @@ bool FileSystem::removeFile(FileType type, int index, std::string name, int dept
 			return false;
 		}
 
+		_superBlock->_currentDiskSize -= temp->getFileSize();
 		if (removeINode(branch)) {
 			if (depth == 0) {
 				adjustDirectory(name);
@@ -471,6 +472,8 @@ void FileSystem::readFile(std::string name) {
 		return;
 	}
 
+	_superBlock->_currentDiskSize -= temp->getFileSize();
+
 	int blockCount = temp->getBlockCount();
 	int blockIndex;
 	for (int i = 0; i < blockCount - 1; ++i) {
@@ -537,6 +540,7 @@ void FileSystem::writeFile(std::string name) {
 
 		temp->setBlockIdentifier(temp->getBlockCount(), blockIndex);
 		temp->increaseFileSizeByAmount(fileSize);
+		_superBlock->_currentDiskSize += fileSize;
 
 		fseek(_systemDisk, BLOCK_BEGIN_INDEX_IN_MEMORY + BLOCK_SIZE * blockIndex, SEEK_SET);
 		fwrite(charBuffer, sizeof(char), fileSize, _systemDisk);
@@ -550,12 +554,10 @@ void FileSystem::writeFile(std::string name) {
 }
 
 void FileSystem::recalculateFileSize() {
-	_currentINode->setFileSize(0);
-	for (int i = 0; i < _directoryCount; ++i) {
-		if (i == 1) {
-			continue;
-		}
-		int iNodeIndex = getInodeIndexOfName(_directory[i].getNameOfDirectory());
+	_currentINode->setFileSize(sizeof(AnnexationDirectory) << 1);
+	for (int i = 2; i < _directoryCount; ++i) {
+		//int iNodeIndex = getInodeIndexOfName(_directory[i].getNameOfDirectory());
+		int iNodeIndex = _directory[i].getINodeIndexOfDirectory();
 		INode* temp = new INode;
 
 		fseek(_systemDisk, INODE_BEGIN_INDEX_IN_MEMORY + sizeof(INode) * iNodeIndex, SEEK_SET);

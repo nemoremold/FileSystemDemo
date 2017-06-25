@@ -55,21 +55,11 @@ namespace Annexation {
 			return _currentINodeIndex;
 		}
 		int getCurrentDiskSize() {
-			INode* calculateSize = new INode;
-			fseek(_systemDisk, INODE_BEGIN_INDEX_IN_MEMORY, SEEK_SET);
-			fread(calculateSize, sizeof(INode), 1, _systemDisk);
+			/*INode* calculateSize = new INode;
+			fseek(_systemDisk, INODE_BEGIN_INDEX_IN_MEMORY + sizeof(INode) * root, SEEK_SET);
+			fread(calculateSize, sizeof(INode), 1, _systemDisk);*/
 
-			/*std::ofstream temp;
-			temp.open("Parser.txt");
-			temp << calculateSize->getFileSize();
-			temp.close();
-			std::ifstream temp2;
-			std::string parser;
-			temp2.open("Parser.txt");
-			temp2 >> parser;
-			System::String^ deliverer = gcnew System::String(parser.c_str());
-			return deliverer;*/
-			return calculateSize->getFileSize();
+			return _superBlock->_currentDiskSize;
 		}
 		System::String^ Parse(int value) const {
 			std::ofstream temp;

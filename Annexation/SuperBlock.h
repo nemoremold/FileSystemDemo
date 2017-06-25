@@ -25,6 +25,7 @@ namespace Annexation {
 		bool removeBlock(int index);
 		int getINodeUsedCount() const;
 		int getBlockUsedCount() const;
+		int _currentDiskSize;
 
 	private:
 		INodeAnnexationMap _iNodeMap;
