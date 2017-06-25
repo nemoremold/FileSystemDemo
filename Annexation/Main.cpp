@@ -21,6 +21,7 @@
 //  1.2.1.170625_beta patch 2 more bugs fixed
 //  1.2.2.170625_beta         critical bugs fixed
 //  1.2.3.170625_beta         prime bug fixed: corrected method of size calculation
+//  1.3.0.170625_beta         final submission
 //
 //
 //  Created by Emoin Lam on 22/06/2017.

@@ -19,6 +19,8 @@ FileSystem::FileSystem() {
 		std::exception e("FileSystem: unable to launch file system disk.");
 		throw e;
 	}
+	FILE_DEL = nullptr;
+	FILE_PATH = nullptr;
 }
 
 FileSystem::~FileSystem() {
@@ -460,7 +462,8 @@ void FileSystem::readFile(std::string name) {
 	}
 	bufferred[cnt] = '\0';
 
-	fopen_s(&buffer, FILE_SYSTEM_IO_BUFFER_PATH, "w+");
+	//fopen_s(&buffer, FILE_SYSTEM_IO_BUFFER_PATH, "w+");
+	fopen_s(&buffer, FILE_PATH, "w+");
 	index = getInodeIndexOfName(name);
 
 	delete bufferred;
@@ -520,7 +523,8 @@ void FileSystem::writeFile(std::string name) {
 	}
 	bufferred[cnt] = '\0';
 
-	fopen_s(&buffer, FILE_SYSTEM_IO_BUFFER_PATH, "r");
+	//fopen_s(&buffer, FILE_SYSTEM_IO_BUFFER_PATH, "r");
+	fopen_s(&buffer, FILE_PATH, "r");
 	index = getInodeIndexOfName(name);
 
 	delete bufferred;

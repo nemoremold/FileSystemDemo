@@ -50,9 +50,14 @@ namespace Annexation {
 
 		AnnexationForm() {
 			fileSystem = new FileSystem;
+			threads = gcnew array<Thread^>(5);
 			willExitSystem = false;
 			this->panels = nullptr;
-			fileSystem->formatFileSystem();
+			for (int i = 0; i < 5; ++i) {
+				fileSystem->marks[i] = -2;
+			}
+
+			//fileSystem->formatFileSystem();
 			fileSystem->initializeFileSystem();
 			InitializeComponent();
 			diskMaxSize = fileSystem->Parse(MAX_FILE_SIZE);
@@ -78,7 +83,7 @@ namespace Annexation {
 			if (fileCount - 2 <= 0) {
 				return;
 			}
-
+			
 			this->panels = (gcnew array<System::Windows::Forms::Panel^>(fileCount - 2));
 			this->fileNameLabels = (gcnew array<System::Windows::Forms::Label^>(fileCount - 2));
 			this->fileTypeLabels = (gcnew array<System::Windows::Forms::Label^>(fileCount - 2));
@@ -144,7 +149,7 @@ namespace Annexation {
 				this->fileNameLabels[i]->Text = fileSystem->getNameOfDirectoryId(i + 2);
 				// 
 				// fileTypeLabel
-				// 
+				//
 				this->fileTypeLabels[i]->AutoSize = true;
 				this->fileTypeLabels[i]->CausesValidation = false;
 				this->fileTypeLabels[i]->Enabled = false;
@@ -188,10 +193,10 @@ namespace Annexation {
 			indexOfButtonBeingClicked = -1;
 			newFileName = 1;
 			newFolderName = 1;
-			diskUsedPercentageInNumber = fileSystem->getCurrentDiskSize() / MAX_FILE_SIZE;
+			//diskUsedPercentageInNumber = fileSystem->getCurrentDiskSize() / MAX_FILE_SIZE;
 			this->diskSizeValue->Text = fileSystem->Parse(fileSystem->getCurrentDiskSize());
 			this->diskSizeValue->Text += diskMaxSize;
-			this->diskUsedBar->Value = diskUsedPercentageInNumber;
+			//this->diskUsedBar->Value = diskUsedPercentageInNumber;
 			this->path->Text = fileSystem->getPath();
 
 			relayout();
@@ -200,6 +205,25 @@ namespace Annexation {
 		void UIControl() {
 			while (!willExitSystem) {
 				this->path->Text = fileSystem->getPath();
+
+				int cnt = 0;
+				for (int i = 0; i < 5; ++i) {
+					if (fileSystem->marks[i] == -2) {
+						++cnt;
+					}
+					if (fileSystem->marks[i] != -2 && !threads[i]->IsAlive) {
+						fileSystem->marks[i] = -2;
+						//reset();
+						++cnt;
+					}
+				}
+				if (cnt == 5) {
+					closeFile->Enabled = false;
+				}
+				else {
+					closeFile->Enabled = true;
+				}
+
 				if (fileSystem->getCurrentINodeIndex() == 0) {
 					backButton->Enabled = false;
 				}
@@ -208,27 +232,24 @@ namespace Annexation {
 				}
 				if (indexOfButtonBeingClicked == -1) {
 					remove->Enabled = false;
-				}
-				else {
-					remove->Enabled = true;
-				}
-				if (indexOfButtonBeingClicked == -1) {
 					open->Enabled = false;
-				}
-				else {
-					open->Enabled = true;
-				}
-				if (indexOfButtonBeingClicked == -1) {
 					rename->Enabled = false;
 				}
 				else {
-					rename->Enabled = true;
-				}
-				if (indexOfButtonBeingClicked == -1) {
-					closeFile->Enabled = false;
-				}
-				else {
-					closeFile->Enabled = true;
+					bool priority = false;
+					for (int i = 0; i < 5; ++i) {
+						if (fileSystem->marks[i] == indexOfButtonBeingClicked) {
+							remove->Enabled = false;
+							open->Enabled = false;
+							rename->Enabled = false;
+							priority = true;
+						}
+					}
+					if (!priority) {
+						remove->Enabled = true;
+						open->Enabled = true;
+						rename->Enabled = true;
+					}
 				}
 				UIController->Sleep(100);
 			}
@@ -236,12 +257,68 @@ namespace Annexation {
 		}
 
 
+		void edit() {
+			int id = passbyvalue;
+			std::string name = fileSystem->getNameOfDirectoryIdInString(id + 2);
+			fileSystem->initializeBufferPath(name);
+			fileSystem->readFile(name);
+			system(fileSystem->FILE_PATH);
+			fileSystem->writeFile(name);
+			system(fileSystem->FILE_DEL);
+
+
+			/*fileSystem->readFile(name);
+			std::string bufferPath = name + FILE_SYSTEM_IO_BUFFER_PATH;
+			std::string deleteBufferCommand = "del " + bufferPath;
+			char* buffer = new char[bufferPath.length() + 2];
+			int cnt = 0;
+			for (int i = 0; i < bufferPath.length(); ++i) {
+				if (bufferPath[i] != ' ') {
+					buffer[cnt++] = bufferPath[i];
+				}
+			}
+			buffer[cnt] = '\0';
+			system(buffer);
+			fileSystem->writeFile(name);
+			delete buffer;
+			cnt = 0;
+			buffer = new char[deleteBufferCommand.length() + 2];
+			for (int i = 0; i < deleteBufferCommand.length(); ++i) {
+				if (i > 3 && deleteBufferCommand[i] != ' ') {
+					buffer[cnt++] = deleteBufferCommand[i];
+				}
+			}
+			buffer[cnt] = '\0';
+			system(buffer);
+			delete buffer;*/
+		}
+
+		int passbyvalue;
+
+		void editFile(int id) {
+			passbyvalue = id;
+			bool isArranged = false;
+			for (int i = 0; i < 5; ++i) {
+				if (threads[i] == nullptr || !threads[i]->IsAlive) {
+					fileSystem->marks[i] = id;
+					isArranged = true;
+					threads[i] = gcnew Thread(gcnew ThreadStart(this, &AnnexationForm::edit));
+					threads[i]->Start();
+					break;
+				}
+			}
+			if (!isArranged) {
+				MessageBox::Show("Number of threads is limited. Close some files to open more.");
+			}
+		}
+
 	private:
 		bool willExitSystem;
 		int newFolderName;
 		int newFileName;
 		System::Int32 diskUsedPercentageInNumber;
 		System::String^ diskMaxSize;
+		array<Thread^>^ threads;
 		array<System::Windows::Forms::Panel^>^ panels;
 		array<System::Windows::Forms::Label^>^ fileNameLabels;
 		array<System::Windows::Forms::Label^>^ fileTypeLabels;
@@ -618,8 +695,9 @@ namespace Annexation {
 			this->closeFile->Name = L"closeFile";
 			this->closeFile->Size = System::Drawing::Size(75, 100);
 			this->closeFile->TabIndex = 5;
-			this->closeFile->Text = L"close file";
+			this->closeFile->Text = L"close files";
 			this->closeFile->UseVisualStyleBackColor = false;
+			this->closeFile->Click += gcnew System::EventHandler(this, &AnnexationForm::closeFile_Click);
 			// 
 			// divideLine3
 			// 
@@ -990,7 +1068,6 @@ private: System::Void createFile_Click(System::Object^  sender, System::EventArg
 	fileSystem->makeFile(fileSystem->getCurrentINodeIndex(), name, FILE);
 	reset();
 }
-
 		 void OnMouseLeave(System::Object ^sender, System::EventArgs ^e);
 		 void OnMouseEnter(System::Object ^sender, System::EventArgs ^e);
 		 void OnMouseDown(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
@@ -1040,10 +1117,11 @@ private: System::Void open_Click(System::Object^  sender, System::EventArgs^  e)
 			buffer[cnt] = '\0';
 			system(buffer);
 			delete buffer;*/
-			fileSystem->readFile(name); 
+			/*fileSystem->readFile(name); 
 			system(FILE_SYSTEM_IO_BUFFER_PATH);
 			fileSystem->writeFile(name);
-			system(FILE_SYSTEM_IO_BUFFER_DELETE);
+			system(FILE_SYSTEM_IO_BUFFER_DELETE);*/
+			editFile(indexOfButtonBeingClicked);
 		}
 		else {
 			fileSystem->enterDirectory(fileSystem->getCurrentINodeIndex(), name);
@@ -1071,6 +1149,10 @@ private: System::Void rename_Click(System::Object^  sender, System::EventArgs^  
 		}
 		reset();
 	}
+}
+private: System::Void closeFile_Click(System::Object^  sender, System::EventArgs^  e) {
+	system(FILE_SYSTEM_IO_BUFFER_CLOSE);
+	reset();
 }
 };
 }
@@ -1151,14 +1233,20 @@ void Annexation::AnnexationForm::OnMouseClick(System::Object ^sender, System::Wi
 
 void Annexation::AnnexationForm::OnMouseDoubleClick(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e) {
 	if (indexOfButtonBeingClicked >= 0) {
+		for (int i = 0; i < 5; ++i) {
+			if (fileSystem->marks[i] == indexOfButtonBeingClicked) {
+				return;
+			}
+		}
 		System::String^ check = fileSystem->getFileTypeOfDirectoryId(indexOfButtonBeingClicked + 2);
 		std::string name = fileSystem->getNameOfDirectoryIdInString(indexOfButtonBeingClicked + 2);
 		FileType a = (check == "FILE" ? FILE : DIRECTORY);
 		if (a == FILE) {
-			fileSystem->readFile(name);
+			/*fileSystem->readFile(name);
 			system(FILE_SYSTEM_IO_BUFFER_PATH);
 			fileSystem->writeFile(name);
-			system(FILE_SYSTEM_IO_BUFFER_DELETE);
+			system(FILE_SYSTEM_IO_BUFFER_DELETE);*/
+			editFile(indexOfButtonBeingClicked);
 		}
 		else {
 			fileSystem->enterDirectory(fileSystem->getCurrentINodeIndex(), name);

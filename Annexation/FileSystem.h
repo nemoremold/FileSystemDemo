@@ -35,15 +35,38 @@ namespace Annexation {
 	const std::string FILE_SYSTEM_COMMAND[FILE_SYSTEM_COMMAND_COUNT]
 		= { "fmt", "quit", "mkdir", "rmdir", "cd", "ls", "mk", "rm", "vim" };
 	const char FILE_SYSTEM_DISK_PATH[] = "AnnexationFileSystemDisk.dat";
-	const char FILE_SYSTEM_IO_BUFFER_PATH[] = "AnnexationFileSystemBuffer.txt";
-	//const std::string FILE_SYSTEM_IO_BUFFER_PATH = "AFSBuffer.txt";
+	//const char FILE_SYSTEM_IO_BUFFER_PATH[] = "AnnexationFileSystemBuffer.txt";
+	const std::string FILE_SYSTEM_IO_BUFFER_PATH = "AFSBuffer.txt";
 	const char FILE_SYSTEM_IO_BUFFER_DELETE[] = "del AnnexationFileSystemBuffer.txt";
+	const char FILE_SYSTEM_IO_BUFFER_CLOSE[] = "TASKKILL /IM notepad.exe";
 
 	class FileSystem {
 	public:
+		char* FILE_PATH;
+		char* FILE_DEL;
 		FileSystem();
 		~FileSystem();
 
+		int marks[5];
+		void initializeBufferPath(std::string name) {
+			std::string temp = name + FILE_SYSTEM_IO_BUFFER_PATH;
+			FILE_PATH = new char[temp.length() + 2];
+			FILE_DEL = new char[temp.length() + 6];
+			int cnt = 0;
+			int cnt2 = 4;
+			FILE_DEL[0] = 'd';
+			FILE_DEL[1] = 'e';
+			FILE_DEL[2] = 'l';
+			FILE_DEL[3] = ' ';
+			for (int i = 0; i < temp.length(); ++i) {
+				if (temp[i] != ' ') {
+					FILE_PATH[cnt++] = temp[i];
+					FILE_DEL[cnt2++] = temp[i];
+				}
+			}
+			FILE_PATH[cnt] = '\0';
+			FILE_DEL[cnt2] = '\0';
+		}
 		System::String^ getPath() const {
 			System::String^ deliverer = gcnew System::String(_path.c_str());
 			return deliverer;
