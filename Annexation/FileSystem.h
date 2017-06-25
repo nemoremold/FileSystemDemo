@@ -36,6 +36,7 @@ namespace Annexation {
 		= { "fmt", "quit", "mkdir", "rmdir", "cd", "ls", "mk", "rm", "vim" };
 	const char FILE_SYSTEM_DISK_PATH[] = "AnnexationFileSystemDisk.dat";
 	const char FILE_SYSTEM_IO_BUFFER_PATH[] = "AnnexationFileSystemBuffer.txt";
+	//const std::string FILE_SYSTEM_IO_BUFFER_PATH = "AFSBuffer.txt";
 	const char FILE_SYSTEM_IO_BUFFER_DELETE[] = "del AnnexationFileSystemBuffer.txt";
 
 	class FileSystem {
@@ -47,9 +48,9 @@ namespace Annexation {
 			System::String^ deliverer = gcnew System::String(_path.c_str());
 			return deliverer;
 		}
-		/*std::string getPath() const {
+		std::string getPathInString() const {
 			return _path;
-		}*/
+		}
 		int getCurrentINodeIndex() const {
 			return _currentINodeIndex;
 		}
@@ -91,9 +92,15 @@ namespace Annexation {
 		int getFileCount() const {
 			return _directoryCount;
 		}
+		void setNameOfDirectoryId(int id, std::string name) {
+			_directory[id].setNameOfDirectory(name);
+		}
 		System::String^ getNameOfDirectoryId(int id) const {
 			System::String^ deliverer = gcnew System::String(_directory[id].getNameOfDirectory().c_str());
 			return deliverer;
+		}
+		std::string getNameOfDirectoryIdInString(int id) const {
+			return _directory[id].getNameOfDirectory();
 		}
 		System::String^ getFileTypeOfDirectoryId(int id) {
 			INode* temp = new INode;

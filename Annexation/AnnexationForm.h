@@ -1,6 +1,7 @@
 #pragma once
 #include "FileSystem.h"
 #include <Windows.h>
+#include <msclr\marshal_cppstd.h>
 
 namespace Annexation {
 	using namespace System;
@@ -10,6 +11,7 @@ namespace Annexation {
 	using namespace System::Data;
 	using namespace System::Drawing;
 	using namespace System::Threading;
+	using namespace Microsoft::VisualBasic;
 
 	/// <summary>
 	/// Summary for AnnexationForm
@@ -70,12 +72,16 @@ namespace Annexation {
 			}
 
 			int fileCount = fileSystem->getFileCount();
-			this->panels = (gcnew array<System::Windows::Forms::Panel^>(fileCount));
-			this->fileNameLabels = (gcnew array<System::Windows::Forms::Label^>(fileCount));
-			this->fileTypeLabels = (gcnew array<System::Windows::Forms::Label^>(fileCount));
-			this->fileSizeLabels = (gcnew array<System::Windows::Forms::Label^>(fileCount));
-			this->pictureBoxes = (gcnew array<System::Windows::Forms::PictureBox^>(fileCount));
-			for (int i = 0; i < fileCount; ++i) {
+			if (fileCount - 2 <= 0) {
+				return;
+			}
+
+			this->panels = (gcnew array<System::Windows::Forms::Panel^>(fileCount - 2));
+			this->fileNameLabels = (gcnew array<System::Windows::Forms::Label^>(fileCount - 2));
+			this->fileTypeLabels = (gcnew array<System::Windows::Forms::Label^>(fileCount - 2));
+			this->fileSizeLabels = (gcnew array<System::Windows::Forms::Label^>(fileCount - 2));
+			this->pictureBoxes = (gcnew array<System::Windows::Forms::PictureBox^>(fileCount - 2));
+			for (int i = 0; i < fileCount - 2; ++i) {
 				System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(AnnexationForm::typeid));
 				this->panels[i] = (gcnew System::Windows::Forms::Panel());
 				this->fileNameLabels[i] = (gcnew System::Windows::Forms::Label());
@@ -105,10 +111,11 @@ namespace Annexation {
 				//this->panels[i]->MouseCaptureChanged += gcnew System::EventHandler(this, &AnnexationForm::OnMouseCaptureChanged);
 				this->panels[i]->MouseEnter += gcnew System::EventHandler(this, &AnnexationForm::OnMouseEnter);
 				this->panels[i]->MouseLeave += gcnew System::EventHandler(this, &AnnexationForm::OnMouseLeave); 
+				this->panels[i]->MouseDoubleClick += gcnew System::Windows::Forms::MouseEventHandler(this, &AnnexationForm::OnMouseDoubleClick);
 				//
 				// pictureBox
 				//
-				if (fileSystem->getFileTypeOfDirectoryId(i) == "FILE") {
+				if (fileSystem->getFileTypeOfDirectoryId(i + 2) == "FILE") {
 					this->pictureBoxes[i]->Image = Image::FromFile("fileicon_middle.ico");
 				}
 				else {
@@ -131,7 +138,7 @@ namespace Annexation {
 				this->fileNameLabels[i]->Name = L"fileNameLabels" + i.ToString();
 				this->fileNameLabels[i]->Size = System::Drawing::Size(53, 20);
 				this->fileNameLabels[i]->TabIndex = 1;
-				this->fileNameLabels[i]->Text = fileSystem->getNameOfDirectoryId(i);
+				this->fileNameLabels[i]->Text = fileSystem->getNameOfDirectoryId(i + 2);
 				// 
 				// fileTypeLabel
 				// 
@@ -144,7 +151,7 @@ namespace Annexation {
 				this->fileTypeLabels[i]->Name = L"fileTypeLabels" + i.ToString();
 				this->fileTypeLabels[i]->Size = System::Drawing::Size(55, 15);
 				this->fileTypeLabels[i]->TabIndex = 2;
-				this->fileTypeLabels[i]->Text = fileSystem->getFileTypeOfDirectoryId(i);
+				this->fileTypeLabels[i]->Text = fileSystem->getFileTypeOfDirectoryId(i + 2);
 				// 
 				// fileSizeLabel
 				// 
@@ -159,7 +166,7 @@ namespace Annexation {
 				this->fileSizeLabels[i]->Size = System::Drawing::Size(204, 15);
 				this->fileSizeLabels[i]->TextAlign = System::Drawing::ContentAlignment::TopRight;
 				this->fileSizeLabels[i]->TabIndex = 3;
-				this->fileSizeLabels[i]->Text = fileSystem->Parse(fileSystem->getFileSizeOfDirectoryId(i)) + " B";
+				this->fileSizeLabels[i]->Text = fileSystem->Parse(fileSystem->getFileSizeOfDirectoryId(i + 2)) + " B";
 				//
 				// resume layout
 				//
@@ -184,11 +191,24 @@ namespace Annexation {
 
 		void UIControl() {
 			while (!willExitSystem) {
+				this->path->Text = fileSystem->getPath();
 				if (fileSystem->getCurrentINodeIndex() == 0) {
 					backButton->Enabled = false;
 				}
 				else {
 					backButton->Enabled = true;
+				}
+				if (indexOfButtonBeingClicked == -1) {
+					remove->Enabled = false;
+				}
+				else {
+					remove->Enabled = true;
+				}
+				if (indexOfButtonBeingClicked == -1) {
+					open->Enabled = false;
+				}
+				else {
+					open->Enabled = true;
 				}
 				UIController->Sleep(100);
 			}
@@ -515,6 +535,7 @@ namespace Annexation {
 			this->remove->TabIndex = 1;
 			this->remove->Text = L"delete";
 			this->remove->UseVisualStyleBackColor = true;
+			this->remove->Click += gcnew System::EventHandler(this, &AnnexationForm::removeButton_Click);
 			// 
 			// rename
 			// 
@@ -532,6 +553,7 @@ namespace Annexation {
 			this->rename->TabIndex = 2;
 			this->rename->Text = L"new name";
 			this->rename->UseVisualStyleBackColor = true;
+			this->rename->Click += gcnew System::EventHandler(this, &AnnexationForm::rename_Click);
 			// 
 			// divideLine2
 			// 
@@ -558,6 +580,7 @@ namespace Annexation {
 			this->open->TabIndex = 4;
 			this->open->Text = L"open";
 			this->open->UseVisualStyleBackColor = true;
+			this->open->Click += gcnew System::EventHandler(this, &AnnexationForm::open_Click);
 			// 
 			// closeFile
 			// 
@@ -918,15 +941,17 @@ private: System::Void exitToolStripMenuItem_Click(System::Object^  sender, Syste
 }
 private: System::Void refreshButton_Click(System::Object^  sender, System::EventArgs^  e) {
 	fileSystem->enterDirectory(fileSystem->getCurrentINodeIndex(), ".");
+	fileSystem->changePath(".");
 	reset();
 }
 private: System::Void backButton_Click(System::Object^  sender, System::EventArgs^  e) {
 	fileSystem->enterDirectory(fileSystem->getCurrentINodeIndex(), "..");
+	fileSystem->changePath("..");
 	reset();
 }
 private: System::Void createFolder_Click(System::Object^  sender, System::EventArgs^  e) {
-	std::string defaultName = "new folder";
-	std::string name = "new folder";
+	std::string defaultName = "newfolder";
+	std::string name = "newfolder";
 	while (!fileSystem->checkNameExistance(name)) {
 		++newFolderName;
 		name = defaultName + (char)('0' + newFolderName);
@@ -935,8 +960,8 @@ private: System::Void createFolder_Click(System::Object^  sender, System::EventA
 	reset();
 }
 private: System::Void createFile_Click(System::Object^  sender, System::EventArgs^  e) {
-	std::string defaultName = "new file";
-	std::string name = "new file";
+	std::string defaultName = "newfile";
+	std::string name = "newfile";
 	while (!fileSystem->checkNameExistance(name)) {
 		++newFileName;
 		name = defaultName + (char)('0' + newFileName);
@@ -950,9 +975,77 @@ private: System::Void createFile_Click(System::Object^  sender, System::EventArg
 		 void OnMouseDown(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
 		 void OnMouseUp(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
 		 void OnMouseClick(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
+		 void OnMouseDoubleClick(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e);
 		 //void OnMouseCaptureChanged(System::Object ^sender, System::EventArgs ^e);
 private: System::Void ContentSplitContainer_Panel2_Paint(System::Object^  sender, System::Windows::Forms::PaintEventArgs^  e) {
 	indexOfButtonBeingClicked = -1;
+}
+private: System::Void removeButton_Click(System::Object^  sender, System::EventArgs^  e) {
+	if (indexOfButtonBeingClicked >= 0) {
+		System::String^ check = fileSystem->getFileTypeOfDirectoryId(indexOfButtonBeingClicked + 2);
+		std::string name = fileSystem->getNameOfDirectoryIdInString(indexOfButtonBeingClicked + 2);
+		FileType a = (check == "FILE" ? FILE : DIRECTORY);
+		fileSystem->removeFile(a, fileSystem->getCurrentINodeIndex(), name, 0);
+		reset();
+	}
+}
+
+private: System::Void open_Click(System::Object^  sender, System::EventArgs^  e) {
+	if (indexOfButtonBeingClicked >= 0) {
+		System::String^ check = fileSystem->getFileTypeOfDirectoryId(indexOfButtonBeingClicked + 2);
+		std::string name = fileSystem->getNameOfDirectoryIdInString(indexOfButtonBeingClicked + 2);
+		FileType a = (check == "FILE" ? FILE : DIRECTORY);
+		if (a == FILE) {
+			/*fileSystem->readFile(name);
+			std::string bufferPath = name + FILE_SYSTEM_IO_BUFFER_PATH;
+			std::string deleteBufferCommand = "del " + bufferPath;
+			char* buffer = new char[bufferPath.length() + 1];
+			int cnt = 0;
+			for (int i = 0; i < bufferPath.length(); ++i) {
+				if (bufferPath[i] != ' ') {
+					buffer[cnt++] = bufferPath[i];
+				}
+			}
+			buffer[cnt] = '\0';
+			system(buffer);
+			fileSystem->writeFile(name);
+			delete buffer;
+			/*buffer = new char[deleteBufferCommand.length() + 1];
+			for (int i = 0; i < deleteBufferCommand.length(); ++i) {
+				if (i > 3 && deleteBufferCommand[i] != ' ') {
+					buffer[cnt++] = deleteBufferCommand[i];
+				}
+			}
+			buffer[cnt] = '\0';
+			system(buffer);
+			delete buffer;*/
+			fileSystem->readFile(name); 
+			system(FILE_SYSTEM_IO_BUFFER_PATH);
+			fileSystem->writeFile(name);
+			system(FILE_SYSTEM_IO_BUFFER_DELETE);
+		}
+		else {
+			fileSystem->enterDirectory(fileSystem->getCurrentINodeIndex(), name);
+			fileSystem->changePath(name);
+		}
+		reset();
+	}
+}
+private: System::Void rename_Click(System::Object^  sender, System::EventArgs^  e) {
+	if (indexOfButtonBeingClicked >= 0) {
+		System::String^ content = "Enter new name in the textbox below.";
+		System::String^ header = "renaming";
+		System::String^ name = fileSystem->getNameOfDirectoryId(indexOfButtonBeingClicked + 2);
+		System::String^ newName = Interaction::InputBox(content, header, name, -1, -1);
+
+		std::string nameToReplace ;nameToReplace = msclr::interop::marshal_as<std::string>(name);
+		if (fileSystem->checkNameExistance(nameToReplace)) {
+			MessageBox::Show(name);
+			MessageBox::Show(gcnew System::String(nameToReplace.c_str()));
+			fileSystem->setNameOfDirectoryId(indexOfButtonBeingClicked + 2, nameToReplace);
+		}
+		reset();
+	}
 }
 };
 }
@@ -960,12 +1053,14 @@ private: System::Void ContentSplitContainer_Panel2_Paint(System::Object^  sender
 void Annexation::AnnexationForm::OnMouseEnter(System::Object ^sender, System::EventArgs ^e)
 {
 	System::Windows::Forms::Panel^ temp = (Panel^)sender;
-	int cnt = 0;
-	for each (System::Windows::Forms::Panel^ iter in panels) {
-		if (temp->Name == iter->Name && cnt == indexOfButtonBeingClicked) {
-			return;
+	if (panels != nullptr) {
+		int cnt = 0;
+		for each (System::Windows::Forms::Panel^ iter in panels) {
+			if (temp->Name == iter->Name && cnt == indexOfButtonBeingClicked) {
+				return;
+			}
+			++cnt;
 		}
-		++cnt;
 	}
 	temp->BackColor = System::Drawing::SystemColors::GradientInactiveCaption;
 	//throw gcnew System::NotImplementedException();
@@ -974,12 +1069,14 @@ void Annexation::AnnexationForm::OnMouseEnter(System::Object ^sender, System::Ev
 void Annexation::AnnexationForm::OnMouseLeave(System::Object ^sender, System::EventArgs ^e)
 {
 	System::Windows::Forms::Panel^ temp = (Panel^)sender;
-	int cnt = 0;
-	for each (System::Windows::Forms::Panel^ iter in panels) {
-		if (temp->Name == iter->Name && cnt == indexOfButtonBeingClicked) {
-			return;
+	if (panels != nullptr) {
+		int cnt = 0;
+		for each (System::Windows::Forms::Panel^ iter in panels) {
+			if (temp->Name == iter->Name && cnt == indexOfButtonBeingClicked) {
+				return;
+			}
+			++cnt;
 		}
-		++cnt;
 	}
 	temp->BackColor = System::Drawing::SystemColors::ControlLightLight;
 	//throw gcnew System::NotImplementedException();
@@ -1008,7 +1105,7 @@ void Annexation::AnnexationForm::OnMouseClick(System::Object ^sender, System::Wi
 	temp->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
 	int cnt = 0;
 	for each (System::Windows::Forms::Panel^ iter in panels) {
-		if (temp->Name != iter->Name && iter->BackColor != System::Drawing::SystemColors::ControlLightLight) {
+		if (temp->Name != iter->Name) {
 			iter->BackColor = System::Drawing::SystemColors::ControlLightLight;
 		}
 		else {
@@ -1026,3 +1123,22 @@ void Annexation::AnnexationForm::OnMouseClick(System::Object ^sender, System::Wi
 	temp->BackColor = System::Drawing::SystemColors::ControlDarkDark;
 	//throw gcnew System::NotImplementedException();
 }*/
+
+void Annexation::AnnexationForm::OnMouseDoubleClick(System::Object ^sender, System::Windows::Forms::MouseEventArgs ^e) {
+	if (indexOfButtonBeingClicked >= 0) {
+		System::String^ check = fileSystem->getFileTypeOfDirectoryId(indexOfButtonBeingClicked + 2);
+		std::string name = fileSystem->getNameOfDirectoryIdInString(indexOfButtonBeingClicked + 2);
+		FileType a = (check == "FILE" ? FILE : DIRECTORY);
+		if (a == FILE) {
+			fileSystem->readFile(name);
+			system(FILE_SYSTEM_IO_BUFFER_PATH);
+			fileSystem->writeFile(name);
+			system(FILE_SYSTEM_IO_BUFFER_DELETE);
+		}
+		else {
+			fileSystem->enterDirectory(fileSystem->getCurrentINodeIndex(), name);
+			fileSystem->changePath(name);
+		}
+		reset();
+	}
+}

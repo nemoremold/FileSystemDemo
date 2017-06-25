@@ -18,6 +18,7 @@
 //  1.1.0.170625_beta         specific modifications of gui were applied
 //  1.2.0.170625_beta         auto layout added
 //  1.2.0.170625_beta patch 1 auto layout implemented
+//  1.2.1.170625_beta patch 2 more bugs fixed
 //
 //
 //  Created by Emoin Lam on 22/06/2017.

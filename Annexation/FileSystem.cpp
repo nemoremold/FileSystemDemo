@@ -449,9 +449,20 @@ void FileSystem::readFile(std::string name) {
 	char charBuffer[BLOCK_SIZE];
 	int index;
 
+	std::string bufferPath = name + FILE_SYSTEM_IO_BUFFER_PATH;
+	char* bufferred = new char[bufferPath.length() + 1];
+	int cnt = 0;
+	for (int i = 0; i < bufferPath.length(); ++i) {
+		if (bufferPath[i] != ' ') {
+			bufferred[cnt++] = bufferPath[i];
+		}
+	}
+	bufferred[cnt] = '\0';
+
 	fopen_s(&buffer, FILE_SYSTEM_IO_BUFFER_PATH, "w+");
 	index = getInodeIndexOfName(name);
 
+	delete bufferred;
 	fseek(_systemDisk, INODE_BEGIN_INDEX_IN_MEMORY + sizeof(INode) * index, SEEK_SET);
 	fread(temp, sizeof(INode), 1, _systemDisk);
 
@@ -496,9 +507,20 @@ void FileSystem::writeFile(std::string name) {
 	char charBuffer[BLOCK_SIZE];
 	int index;
 
+	std::string bufferPath = name + FILE_SYSTEM_IO_BUFFER_PATH;
+	char* bufferred = new char[bufferPath.length() + 1];
+	int cnt = 0;
+	for (int i = 0; i < bufferPath.length(); ++i) {
+		if (bufferPath[i] != ' ') {
+			bufferred[cnt++] = bufferPath[i];
+		}
+	}
+	bufferred[cnt] = '\0';
+
 	fopen_s(&buffer, FILE_SYSTEM_IO_BUFFER_PATH, "r");
 	index = getInodeIndexOfName(name);
 
+	delete bufferred;
 	fseek(_systemDisk, INODE_BEGIN_INDEX_IN_MEMORY + sizeof(INode) * index, SEEK_SET);
 	fread(temp, sizeof(INode), 1, _systemDisk);
 
