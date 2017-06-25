@@ -162,12 +162,18 @@
     <ClInclude Include="AnnexationMapping.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="INode.h" />
+    <ClInclude Include="RenameForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="resource.h" />
     <ClInclude Include="SuperBlock.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AnnexationForm.resx">
       <DependentUpon>AnnexationForm.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RenameForm.resx">
+      <DependentUpon>RenameForm.h</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

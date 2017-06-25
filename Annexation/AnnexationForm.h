@@ -2,6 +2,7 @@
 #include "FileSystem.h"
 #include <Windows.h>
 #include <msclr\marshal_cppstd.h>
+#include "RenameForm.h"
 
 namespace Annexation {
 	using namespace System;
@@ -11,7 +12,6 @@ namespace Annexation {
 	using namespace System::Data;
 	using namespace System::Drawing;
 	using namespace System::Threading;
-	using namespace Microsoft::VisualBasic;
 
 	/// <summary>
 	/// Summary for AnnexationForm
@@ -1036,12 +1036,16 @@ private: System::Void rename_Click(System::Object^  sender, System::EventArgs^  
 		System::String^ content = "Enter new name in the textbox below.";
 		System::String^ header = "renaming";
 		System::String^ name = fileSystem->getNameOfDirectoryId(indexOfButtonBeingClicked + 2);
-		System::String^ newName = Interaction::InputBox(content, header, name, -1, -1);
+		System::String^ newName;
 
-		std::string nameToReplace ;nameToReplace = msclr::interop::marshal_as<std::string>(name);
+		RenameForm^ renameForm = gcnew RenameForm(name);
+		if (renameForm->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			newName = renameForm->get();
+		}
+
+		std::string nameToReplace ;
+		nameToReplace = msclr::interop::marshal_as<std::string>(newName);
 		if (fileSystem->checkNameExistance(nameToReplace)) {
-			MessageBox::Show(name);
-			MessageBox::Show(gcnew System::String(nameToReplace.c_str()));
 			fileSystem->setNameOfDirectoryId(indexOfButtonBeingClicked + 2, nameToReplace);
 		}
 		reset();
